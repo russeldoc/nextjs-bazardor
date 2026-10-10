@@ -6,7 +6,7 @@ export type Product = {
 export type MarketPrice = { market: string; price: number; unit: string; updated?: string };
 export type Category = { id: string; name: string; slug: string; emoji: string };
 
-const API = (process.env.BAZARDOR_API_URL || "https://api.api-store.workers.dev/api/bazardor").replace(/\/$/, "");
+const API = (process.env.BAZARDOR_API_URL || "https://api.abcz.workers.dev/api/bazardor").replace(/\/$/, "");
 const bnDigits = "০১২৩৪৫৬৭৮৯";
 export function toBn(value: number | string) {
   return String(value).replace(/\d/g, d => bnDigits[Number(d)]).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
