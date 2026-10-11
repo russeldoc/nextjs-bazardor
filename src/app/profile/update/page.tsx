@@ -1,16 +1,18 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
 export default function UpdateProfilePage() {
-  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const currentName = session?.user?.name;
+
+  useEffect(() => {
+    if (!isPending && !session) window.location.replace("/signin?next=/profile/update&auth=required");
+  }, [isPending, session]);
 
   useEffect(() => {
     if (currentName) setName(currentName);
@@ -21,18 +23,19 @@ export default function UpdateProfilePage() {
     if (!name.trim()) return void toast.error("নাম খালি রাখা যাবে না");
     setLoading(true);
     const { error } = await authClient.updateUser({ name: name.trim() });
-    setLoading(false);
-    if (error) return void toast.error(error.message || "তথ্য আপডেট করা যায়নি");
-    toast.success("নাম আপডেট হয়েছে");
-    router.push("/profile");
-    router.refresh();
+    if (error) {
+      setLoading(false);
+      return void toast.error(error.message || "তথ্য আপডেট করা যায়নি");
+    }
+    sessionStorage.setItem("flash", "নাম আপডেট হয়েছে");
+    window.location.assign("/profile");
   }
 
   return (
     <main className="mx-auto w-full max-w-md px-4 py-10">
       <div className="rounded-2xl border border-green-900/10 bg-white p-6 shadow-sm sm:p-8">
         <h1 className="text-2xl font-bold">তথ্য আপডেট করুন</h1>
-        {isPending ? (
+        {isPending || !session ? (
           <div className="mt-6 h-24 animate-pulse rounded-xl bg-gray-200" />
         ) : (
           <form onSubmit={submit} className="mt-6 space-y-4">

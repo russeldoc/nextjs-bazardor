@@ -1,9 +1,14 @@
 "use client";
+import { useEffect } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 
 export default function ProfilePage() {
   const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    if (!isPending && !session) window.location.replace("/signin?next=/profile&auth=required");
+  }, [isPending, session]);
 
   if (isPending || !session) {
     return (
@@ -12,6 +17,7 @@ export default function ProfilePage() {
       </main>
     );
   }
+
   const user = session.user;
   return (
     <main className="mx-auto w-full max-w-xl px-4 py-10">

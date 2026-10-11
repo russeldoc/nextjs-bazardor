@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { getProductBySlug } from "@/lib/products";
 import { toBn } from "@/lib/format";
 import ChangeBadge from "@/components/ChangeBadge";
+import { requireSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const product = await getProductBySlug(decodeURIComponent((await params).slug));
+  const slug = decodeURIComponent((await params).slug);
+  await requireSession(`/product/${encodeURIComponent(slug)}`); // not signed in -> /signin
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
   const tk = (n: number) => `${toBn(Math.round(n))} টাকা`;
