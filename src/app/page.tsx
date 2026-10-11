@@ -1,29 +1,67 @@
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowDown, ArrowRight, ArrowUp, ShieldCheck, TrendingUp } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { getProducts } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
-export const revalidate = 300;
+import EmptyState from "@/components/EmptyState";
+
+export const dynamic = "force-dynamic";
+
+function Grid({ children }: { children: React.ReactNode }) {
+  return <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{children}</div>;
+}
+
 export default async function HomePage() {
-  const products=await getProducts();
-  const risers=products.filter(p=>p.change>0).sort((a,b)=>b.change-a.change).slice(0,6);
-  const fallers=products.filter(p=>p.change<0).sort((a,b)=>a.change-b.change).slice(0,6);
-  return <main>
-    <section className="hero"><div className="wrap hero-inner"><div>
-      <span className="eyebrow"><TrendingUp size={15}/> প্রতিদিনের বাজারদর, এক জায়গায়</span>
-      <h1>বাজারের সঠিক খবর,<br/><span>সিদ্ধান্ত হোক সহজ।</span></h1>
-      <p>চাল, ডাল, মাছ, মাংস থেকে নিত্যপ্রয়োজনীয় সব পণ্যের দাম জানুন এক নজরে। বাজার বুঝে কেনাকাটা করুন আত্মবিশ্বাসের সঙ্গে।</p>
-      <a href="#সব-পণ্য" className="btn btn-primary">সব পণ্য দেখুন <ArrowRight size={17}/></a>
-      <div className="hero-stats"><div className="hero-stat"><ShieldCheck size={20}/><span><b>সহজ ও স্বচ্ছ</b>বাজারদরের তথ্য</span></div><div className="hero-stat"><TrendingUp size={20}/><span><b>দৈনিক আপডেট</b>দাম ওঠানামার খবর</span></div></div>
-    </div><div className="hero-visual"><Image src="/bazar-hero.png" alt="তাজা বাজারের পণ্য" width={390} height={300} priority className="hero-image"/></div></div></section>
-    <section className="section"><div className="wrap"><div className="section-head"><div><h2 className="section-title">আজ দাম বেড়েছে <span className="up">▲</span></h2><p className="section-subtitle">যেসব পণ্যের দাম আজ ঊর্ধ্বমুখী</p></div></div>
-      {risers.length ? <div className="product-grid">{risers.map(p=><ProductCard key={p.id} product={p}/>)}</div> : <div className="empty-state"><div className="empty-emoji">📈</div><h2>দাম বৃদ্ধির তথ্য পাওয়া যায়নি</h2><p>API-তে মূল্য পরিবর্তনের তথ্য এলে এখানে দেখা যাবে।</p></div>}
-    </div></section>
-    <section className="section section-muted"><div className="wrap"><div className="section-head"><div><h2 className="section-title">আজ দাম কমেছে <span className="down">▼</span></h2><p className="section-subtitle">কম দামে কেনাকাটার সুযোগ খুঁজে নিন</p></div></div>
-      {fallers.length ? <div className="product-grid">{fallers.map(p=><ProductCard key={p.id} product={p}/>)}</div> : <div className="empty-state"><div className="empty-emoji">📉</div><h2>দাম কমার তথ্য পাওয়া যায়নি</h2><p>API-তে মূল্য পরিবর্তনের তথ্য এলে এখানে দেখা যাবে।</p></div>}
-    </div></section>
-    <section className="section" id="সব-পণ্য"><div className="wrap"><div className="section-head"><div><h2 className="section-title">সব পণ্য</h2><p className="section-subtitle">নিত্যপ্রয়োজনীয় পণ্যের বর্তমান দাম দেখুন। বিস্তারিত জানতে যেকোনো পণ্যে ক্লিক করুন।</p></div><span className="section-link">{products.length.toLocaleString("bn-BD")}টি পণ্য</span></div>
-      {products.length ? <div className="product-grid">{products.map(p=><ProductCard key={p.id} product={p}/>)}</div> : <div className="empty-state"><div className="empty-emoji">🛒</div><h2>পণ্যের তথ্য লোড করা যায়নি</h2><p>ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।</p><Link href="/" className="btn btn-primary">আবার চেষ্টা করুন</Link></div>}
-    </div></section>
-  </main>;
+  const products = await getProducts();
+  const risers = products.filter((p) => p.change > 0).sort((a, b) => b.change - a.change).slice(0, 6);
+  const fallers = products.filter((p) => p.change < 0).sort((a, b) => a.change - b.change).slice(0, 6);
+
+  return (
+    <main>
+      {/* Hero */}
+      <section className="bg-leaf-dark text-white">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-8 px-4 py-10 md:grid-cols-2 md:py-16">
+          <div>
+            <p className="text-sm font-semibold text-saffron">প্রতিদিনের বাজারদর, এক জায়গায়</p>
+            <h1 className="mt-3 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
+              বাজারে যাওয়ার আগে দামটা জেনে নিন
+            </h1>
+            <p className="mt-4 max-w-xl text-white/85">
+              চাল, ডাল, মাছ, মাংস ও সবজিসহ নিত্যপ্রয়োজনীয় পণ্যের আজকের দাম এবং কোন পণ্যের দাম বাড়ল বা কমল — সব এক নজরে।
+            </p>
+            <a href="#সব-পণ্য" className="mt-6 inline-flex items-center gap-2 rounded-full bg-saffron px-6 py-3 font-bold text-ink hover:brightness-95">
+              সব পণ্য দেখুন <ArrowDown size={18} />
+            </a>
+          </div>
+          <div className="flex justify-center md:justify-end">
+            <Image src="/bazar-hero.png" alt="তাজা বাজারের পণ্য" width={520} height={400} priority className="h-auto w-full max-w-md rounded-2xl object-cover" />
+          </div>
+        </div>
+      </section>
+
+      {/* Section A */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-10">
+        <h2 className="text-2xl font-bold">আজ দাম বেড়েছে <span className="text-green-600">▲</span></h2>
+        <p className="mb-5 text-sm text-ink/60">যেসব পণ্যের দাম সবচেয়ে বেশি বেড়েছে</p>
+        {risers.length ? <Grid>{risers.map((p) => <ProductCard key={p.id} product={p} />)}</Grid> : <p className="rounded-xl bg-white p-6 text-center text-ink/60">আজ দাম বাড়ার তথ্য নেই।</p>}
+      </section>
+
+      {/* Section B */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-10">
+        <h2 className="text-2xl font-bold">আজ দাম কমেছে <span className="text-red-600">▼</span></h2>
+        <p className="mb-5 text-sm text-ink/60">যেসব পণ্যের দাম সবচেয়ে বেশি কমেছে</p>
+        {fallers.length ? <Grid>{fallers.map((p) => <ProductCard key={p.id} product={p} />)}</Grid> : <p className="rounded-xl bg-white p-6 text-center text-ink/60">আজ দাম কমার তথ্য নেই।</p>}
+      </section>
+
+      {/* Section C */}
+      <section id="সব-পণ্য" className="mx-auto w-full max-w-6xl px-4 pt-10">
+        <h2 className="text-2xl font-bold">সব পণ্য</h2>
+        <p className="mb-5 text-sm text-ink/60">নিত্যপ্রয়োজনীয় পণ্যের আজকের দাম। বিস্তারিত দেখতে যেকোনো পণ্যে ক্লিক করুন।</p>
+        {products.length ? (
+          <Grid>{products.map((p) => <ProductCard key={p.id} product={p} />)}</Grid>
+        ) : (
+          <EmptyState emoji="🛒" title="পণ্যের তথ্য লোড করা যায়নি" text="ইন্টারনেট সংযোগ পরীক্ষা করে পেজটি রিলোড করুন।" />
+        )}
+      </section>
+    </main>
+  );
 }

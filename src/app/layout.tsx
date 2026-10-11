@@ -1,14 +1,29 @@
 import type { Metadata } from "next";
+// import { Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
-import ToastProvider from "@/components/ToastProvider";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import ToastProvider from "@/components/ToastProvider";
 import { getCategories, getProducts } from "@/lib/products";
+
+// const font = Noto_Sans_Bengali({ subsets: ["bengali", "latin"], variable: "--font-bn", display: "swap" });
+
 export const metadata: Metadata = {
-  title: "বাজার দর | প্রতিদিনের বাজারদর",
-  description: "প্রয়োজনীয় পণ্যের দাম এক নজরে — বাংলাদেশের বাজারদর জানুন।",
-  applicationName: "BazarDor"
+  title: { default: "বাজার দর — প্রয়োজনীয় পণ্যের দাম এক নজরে", template: "%s | বাজার দর" },
+  description: "বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের দৈনিক বাজারদর, দাম ওঠানামা ও বাজারভিত্তিক দাম।",
 };
-export default async function RootLayout({children}:{children:React.ReactNode}) {
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [categories, products] = await Promise.all([getCategories(), getProducts()]);
-  return <html lang="bn"><body><ToastProvider/><Navbar categories={categories} products={products}/>{children}<footer className="site-footer"><div className="wrap footer-inner"><div><div className="footer-brand">🛒 বাজার দর</div><p>প্রয়োজনীয় পণ্যের দাম এক নজরে।</p></div><p className="footer-note">সকল দাম সম্ভাব্য; বাজার অবস্থার ওপর নির্ভর করে পরিবর্তিত হয়।</p></div></footer></body></html>;
+  const today = new Intl.DateTimeFormat("bn-BD", { dateStyle: "full", timeZone: "Asia/Dhaka" }).format(new Date());
+  return (
+    <html lang="bn">
+      <body className="flex min-h-screen flex-col">
+        <ToastProvider />
+        <Navbar categories={categories} products={products} today={today} />
+        <div className="flex-1">{children}</div>
+        <Footer />
+      </body>
+    </html>
+  );
 }

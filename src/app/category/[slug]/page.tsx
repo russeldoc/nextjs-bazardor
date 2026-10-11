@@ -1,14 +1,35 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { getCategories, getProducts } from "@/lib/products";
 import SortProducts from "@/components/SortProducts";
-export const revalidate=300;
-export default async function CategoryPage({params}:{params:Promise<{slug:string}>}) {
-  const {slug}=await params;
-  const [categories,allProducts]=await Promise.all([getCategories(),getProducts()]);
-  const category=categories.find(c=>c.slug.toLowerCase()===slug.toLowerCase()||c.id.toLowerCase()===slug.toLowerCase());
-  const products=allProducts.filter(p=>p.category.toLowerCase()===slug.toLowerCase()||p.categoryName.toLowerCase()===category?.name.toLowerCase()||p.category.toLowerCase()===category?.name.toLowerCase());
-  if(!category && products.length===0) notFound();
-  return <main><section className="page-banner"><div className="wrap"><div className="breadcrumbs"><Link href="/">হোম</Link> / {category?.name || slug}</div><h1 className="page-title">{category?.emoji || "🛒"} {category?.name || slug}</h1><p className="section-subtitle">এই ক্যাটাগরির পণ্যের বর্তমান বাজারদর</p></div></section>
-    <section className="page-content wrap">{products.length ? <SortProducts products={products}/> : <div className="empty-state"><div className="empty-emoji">📦</div><h2>এই ক্যাটাগরিতে পণ্য নেই</h2><p>অন্য ক্যাটাগরি থেকে পণ্য দেখুন।</p><Link className="btn btn-primary" href="/">হোম পেজে ফিরে যান</Link></div>}</section></main>;
+import EmptyState from "@/components/EmptyState";
+
+export const dynamic = "force-dynamic";
+
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const cat = (await getCategories()).find((c) => c.slug === decodeURIComponent(slug).toLowerCase());
+  return { title: cat ? cat.name : "ক্যাটাগরি" };
+}
+
+export default async function CategoryPage({ params }: Props) {
+  const slug = decodeURIComponent((await params).slug).toLowerCase();
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+  const category = categories.find((c) => c.slug === slug);
+  const items = products.filter((p) => p.category.toLowerCase() === slug);
+
+  if (!category || items.length === 0) {
+    return <EmptyState code="404" title="এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি" text="ক্যাটাগরির লিংকটি সঠিক কি না যাচাই করুন, অথবা হোম পেজে ফিরে যান।" />;
+  }
+
+  return (
+    <main className="mx-auto w-full max-w-6xl px-4 py-8">
+      <h1 className="mb-6 flex items-center gap-3 text-3xl font-extrabold">
+        <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-green-100 text-3xl">{category.emoji}</span>
+        {category.name}
+      </h1>
+      <SortProducts products={items} />
+    </main>
+  );
 }

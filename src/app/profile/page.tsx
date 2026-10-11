@@ -1,12 +1,35 @@
- "use client";
+"use client";
 import Link from "next/link";
-import { useEffect, useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
-export default function ProfilePage(){
-  const {data:session,isPending}=authClient.useSession();const router=useRouter();
-  useEffect(()=>{if(!isPending&&!session){toast("প্রোফাইল দেখতে সাইন ইন করুন");router.replace("/signin")}},[isPending,session,router]);
-  if(isPending||!session)return <main className="page-content wrap"><div className="skeleton-card"><div className="skeleton skeleton-line"/></div></main>;
-  return <main><section className="page-banner"><div className="wrap"><h1 className="page-title">আমার প্রোফাইল</h1><p className="section-subtitle">আপনার অ্যাকাউন্টের তথ্য</p></div></section><section className="page-content wrap"><div className="profile-card"><div style={{fontSize:44}}>👤</div><h2>{session.user.name}</h2><p className="profile-meta">{session.user.email}</p><Link href="/profile/update" className="btn btn-primary">তথ্য আপডেট করুন</Link></div></section></main>;
+
+export default function ProfilePage() {
+  const { data: session, isPending } = authClient.useSession();
+
+  if (isPending || !session) {
+    return (
+      <main className="mx-auto w-full max-w-xl px-4 py-10">
+        <div className="h-56 animate-pulse rounded-2xl bg-gray-200" />
+      </main>
+    );
+  }
+  const user = session.user;
+  return (
+    <main className="mx-auto w-full max-w-xl px-4 py-10">
+      <div className="rounded-2xl border border-green-900/10 bg-white p-6 text-center shadow-sm sm:p-8">
+        {user.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={user.image} alt="" className="mx-auto h-20 w-20 rounded-full object-cover" />
+        ) : (
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-leaf text-3xl font-bold text-white">
+            {(user.name || user.email).charAt(0).toUpperCase()}
+          </div>
+        )}
+        <h1 className="mt-4 text-2xl font-bold">{user.name}</h1>
+        <p className="text-ink/60">{user.email}</p>
+        <Link href="/profile/update" className="mt-6 inline-flex rounded-full bg-leaf px-6 py-3 font-bold text-white hover:bg-leaf-dark">
+          তথ্য আপডেট করুন
+        </Link>
+      </div>
+    </main>
+  );
 }

@@ -1,2 +1,5 @@
-import Link from "next/link";
-export default function NotFound(){return <main className="not-found"><div className="code">404</div><h1>দুঃখিত, পেজটি খুঁজে পাওয়া যায়নি</h1><p>আপনি যে পেজটি খুঁজছেন সেটি সরানো হয়েছে বা ঠিকানা ভুল।</p><Link className="btn btn-primary" href="/">হোম পেজে ফিরে যান</Link></main>}
+import EmptyState from "@/components/EmptyState";
+
+export default function NotFound() {
+  return <EmptyState code="404" title="পেজটি খুঁজে পাওয়া যায়নি" text="আপনি যে লিংকটি খুঁজছেন তা সঠিক নয় বা সরানো হয়েছে।" />;
+}
