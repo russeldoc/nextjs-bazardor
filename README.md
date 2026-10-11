@@ -4,8 +4,8 @@
 
 বাজার দর হলো বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের দৈনিক বাজারদর দেখার একটি responsive web application। এখানে চাল, ডাল, তেল, সবজি, মাছ, মাংস ও অন্যান্য পণ্যের আজকের দাম, গতকালের তুলনায় দাম বাড়া-কমার হার এবং বিভিন্ন বাজারের সর্বনিম্ন ও সর্বোচ্চ দাম দেখা যায়। সব দাম বাংলা অঙ্কে দেখানো হয়।
 
-- **Live site:** `https://YOUR-PROJECT.vercel.app` _(deploy করার পর লিংক বসান)_
-- **GitHub:** `https://github.com/YOUR-USERNAME/bazardor`
+- **Live site:** `https://nextjs-bazardor.vercel.app` _(deploy করার পর লিংক বসান)_
+- **GitHub:** `https://github.com/russeldoc/nextjs-bazardor`
 
 ---
 
